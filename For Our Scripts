@@ -12,11 +12,10 @@ local Window = Fluent:CreateWindow({
     MinimizeKey = Enum.KeyCode.LeftControl -- Used when theres no MinimizeKeybind
 })
 
---Fluent provides Lucide Icons https://lucide.dev/icons/ for the tabs, icons are optional
+-- Fluent provides Lucide Icons https://lucide.dev/icons/ for the tabs, icons are optional
 local Tabs = {
     Main = Window:AddTab({ Title = "Main", Icon = "archive-restore" }),
     Settings = Window:AddTab({ Title = "Settings", Icon = "settings" })
-
 }
 
 local Options = Fluent.Options
@@ -29,78 +28,74 @@ do
         Duration = 5 -- Set to nil to make the notification not disappear
     })
 
-
-
     Tabs.Main:AddParagraph({
         Title = "Welcome to The Driving Empire Script❗",
         Content = "By ashy1828, And a Tiny Bit of monstraa"
     })
 
-Tabs.Settings:AddParagraph({
+    Tabs.Settings:AddParagraph({
         Title = "🌐 Credits & Info 🌐",
-Content = ""
-})
-Tabs.Settings:AddParagraph({
+        Content = ""
+    })
+    Tabs.Settings:AddParagraph({
         Title = "👑 Crown Cheats 👑",
-Content = ""
-})
-Tabs.Settings:AddParagraph({
-        Title = "📝 Script 📝 : Drving Empire",
-Content = ""
-})
-Tabs.Settings:AddParagraph({
+        Content = ""
+    })
+    Tabs.Settings:AddParagraph({
+        Title = "📝 Script 📝 : Driving Empire",
+        Content = ""
+    })
+    Tabs.Settings:AddParagraph({
         Title = "By : ashy1828, monstra",
-Content = ""
-})
-Tabs.Settings:AddParagraph({
+        Content = ""
+    })
+    Tabs.Settings:AddParagraph({
         Title = "UI : Fluent",
-Content = ""
-})
-Tabs.Settings:AddParagraph({
+        Content = ""
+    })
+    Tabs.Settings:AddParagraph({
         Title = "v1.0.2",
-Content = ""
-})
-
-
-
-
-local Toggle = Tabs.Main:AddToggle("MyToggle", {Title = "Auto Farm", Default = false })
-
-    Toggle:OnChanged(function()
-
-
-    Options.MyToggle:SetValue(false)
-
-local Toggle = Tabs.Main:AddToggle("MyToggle", {Title = "Anti AFK", Default = false })
-
-    Toggle:OnChanged(function() -- Anti Afk Before Script is Injected--
-
-        print("Toggle changed:", Options.MyToggle.Value)
-    end)
-
-    Options.MyToggle:SetValue(false)
-
+        Content = ""
+    })
 end
 
+-- Add toggles for Auto Farm and Anti AFK
+local AutoFarmToggle = Tabs.Main:AddToggle("NameToggle", {
+    Title = "Name",
+    Default = false
+})
 
+AutoFarmToggle:OnChanged(function(val)
+    -- Handle Auto Farm Toggle change
+    print("Message", val)
+end)
 
+local AntiAfkToggle = Tabs.Main:AddToggle("NameToggle", {
+    Title = "Name",
+    Default = false
+})
+
+AntiAfkToggle:OnChanged(function(val)
+    -- Handle Anti AFK Toggle change
+    print("Message", val)
+end)
 
 -- Addons:
 -- SaveManager (Allows you to have a configuration system)
--- InterfaceManager (Allows you to have a interface managment system)
+-- InterfaceManager (Allows you to have a interface management system)
 
 -- Hand the library over to our managers
 SaveManager:SetLibrary(Fluent)
 InterfaceManager:SetLibrary(Fluent)
 
 -- Ignore keys that are used by ThemeManager.
--- (we dont want configs to save themes, do we?)
+-- (we don't want configs to save themes, do we?)
 SaveManager:IgnoreThemeSettings()
 
 -- You can add indexes of elements the save manager should ignore
 SaveManager:SetIgnoreIndexes({})
 
--- use case for doing it this way:
+-- Use case for doing it this way:
 -- a script hub could have themes in a global folder
 -- and game configs in a separate folder per game
 InterfaceManager:SetFolder("FluentScriptHub")
@@ -109,12 +104,11 @@ SaveManager:SetFolder("FluentScriptHub/specific-game")
 InterfaceManager:BuildInterfaceSection(Tabs.Settings)
 SaveManager:BuildConfigSection(Tabs.Settings)
 
-
 Window:SelectTab(1)
 
 Fluent:Notify({
     Title = "Crown Cheats",
-    Content = "Driving Empire Script Has Loaded Succesfully!",
+    Content = "Driving Empire Script Has Loaded Successfully!",
     Duration = 8
 })
 
