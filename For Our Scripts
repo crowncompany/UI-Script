@@ -3,175 +3,121 @@ local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/d
 local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/InterfaceManager.lua"))()
 
 local Window = Fluent:CreateWindow({
-    Title = "CrownCheats - (Driving Empire Script)",
+    Title = "CrownCheats - (Driving Empire Script)  ",
     SubTitle = "By ashy1828, monstraa",
     TabWidth = 160,
     Size = UDim2.fromOffset(580, 460),
-    Acrylic = true,
+    Acrylic = true, -- The blur may be detectable, setting this to false disables blur entirely
     Theme = "Dark",
-    MinimizeKey = Enum.KeyCode.LeftControl
+    MinimizeKey = Enum.KeyCode.LeftControl -- Used when theres no MinimizeKeybind
 })
 
+--Fluent provides Lucide Icons https://lucide.dev/icons/ for the tabs, icons are optional
 local Tabs = {
     Main = Window:AddTab({ Title = "Main", Icon = "archive-restore" }),
     Settings = Window:AddTab({ Title = "Settings", Icon = "settings" })
+
 }
 
 local Options = Fluent.Options
-local AutoFarm = false
-local AutoFarmRunning = false
-local TouchTheRoad = false
-local FarmSpeed = 600 -- Default farm speed
 
--- Player & Utility
-local LocalPlayer = game:GetService("Players").LocalPlayer
-local VirtualUser = game:GetService("VirtualUser")
-local Camera = workspace.CurrentCamera
+do
+    Fluent:Notify({
+        Title = "Notification",
+        Content = "👑 CrownCheats 👑",
+        SubContent = "Driving Empire", -- Optional
+        Duration = 5 -- Set to nil to make the notification not disappear
+    })
 
-local function GetCurrentVehicle()
-    return LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") and LocalPlayer.Character.Humanoid.SeatPart and LocalPlayer.Character.Humanoid.SeatPart.Parent
-end
 
-local function TP(cframe)
-    local car = GetCurrentVehicle()
-    if car and car.PrimaryPart then
-        car:SetPrimaryPartCFrame(cframe)
-    end
-end
 
--- ✅ New VelocityTP (car now faces destination properly)
-local function VelocityTP(targetCFrame)
-    local car = GetCurrentVehicle()
-    if not car or not car.PrimaryPart then return end
+    Tabs.Main:AddParagraph({
+        Title = "Welcome to The Driving Empire Script❗",
+        Content = "By ashy1828, And a Tiny Bit of monstraa"
+    })
 
-    local direction = (targetCFrame.Position - car.PrimaryPart.Position).Unit
-    local newCFrame = CFrame.new(car.PrimaryPart.Position, car.PrimaryPart.Position + direction)
-    car:SetPrimaryPartCFrame(newCFrame)
-
-    local bg = Instance.new("BodyGyro", car.PrimaryPart)
-    bg.P = 5000
-    bg.MaxTorque = Vector3.new(9e9, 9e9, 9e9)
-    bg.CFrame = newCFrame
-
-    local bv = Instance.new("BodyVelocity", car.PrimaryPart)
-    bv.MaxForce = Vector3.new(9e9, 9e9, 9e9)
-    bv.Velocity = direction * FarmSpeed
-
-    local travelTime = (car.PrimaryPart.Position - targetCFrame.Position).Magnitude / FarmSpeed
-    wait(travelTime)
-
-    bv:Destroy()
-    bg:Destroy()
-end
-
--- Coordinates for farming route
-local StartPosition = CFrame.new(Vector3.new(4940.19775, 66.0195084, -1933.99927))
-local EndPosition = CFrame.new(Vector3.new(1827.3407, 66.0150146, -658.946655))
-
--- Coroutine for farm loop
-local AutoFarmFunc = coroutine.create(function()
-    while true do
-        wait()
-        if not AutoFarm then
-            AutoFarmRunning = false
-            coroutine.yield()
-        end
-        AutoFarmRunning = true
-
-        pcall(function()
-            if GetCurrentVehicle() then
-                TP(StartPosition)
-                VelocityTP(EndPosition)
-                TP(EndPosition)
-                VelocityTP(StartPosition)
-            end
-        end)
-    end
-end)
-
--- Anti-AFK
-LocalPlayer.Idled:Connect(function()
-    VirtualUser:CaptureController()
-    VirtualUser:ClickButton2(Vector2.new(), Camera.CFrame)
-end)
-
--- UI Setup
-Fluent:Notify({
-    Title = "Notification",
-    Content = "👑 CrownCheats 👑",
-    SubContent = "Driving Empire",
-    Duration = 5
+Tabs.Settings:AddParagraph({
+        Title = "🌐 Credits & Info 🌐",
+Content = ""
+})
+Tabs.Settings:AddParagraph({
+        Title = "👑 Crown Cheats 👑",
+Content = ""
+})
+Tabs.Settings:AddParagraph({
+        Title = "📝 Script 📝 : Drving Empire",
+Content = ""
+})
+Tabs.Settings:AddParagraph({
+        Title = "By : ashy1828, monstra",
+Content = ""
+})
+Tabs.Settings:AddParagraph({
+        Title = "UI : Fluent",
+Content = ""
+})
+Tabs.Settings:AddParagraph({
+        Title = "v1.0.2",
+Content = ""
 })
 
-Tabs.Main:AddParagraph({
-    Title = "Welcome to The Driving Empire Script❗",
-    Content = "By ashy1828, And a Tiny Bit of monstraa"
-})
 
--- 🌟 Auto Farm Toggle
-Tabs.Main:AddToggle("AutoFarmToggle", {
-    Title = "Auto Farm",
-    Default = false
-}):OnChanged(function(val)
-    AutoFarm = val
-    if val and not AutoFarmRunning then
-        coroutine.resume(AutoFarmFunc)
-    end
-end)
 
--- Farm Speed Slider (placed under Auto Farm)
-Tabs.Main:AddSlider("SpeedSlider", {
-    Title = "Farm Speed",
-    Description = "Adjust Auto Farm Speed",
-    Default = 600,
-    Min = 100,
-    Max = 1000,
-    Rounding = 0,
-    Callback = function(val)
-        FarmSpeed = val
-    end
-})
 
--- Road Touch Toggle (optional)
-Tabs.Main:AddToggle("TouchTheRoad", {
-    Title = "Touch The Road (Optional)",
-    Default = false
-}):OnChanged(function(val)
-    TouchTheRoad = val
-end)
+local Toggle = Tabs.Main:AddToggle("MyToggle", {Title = "Auto Farm", Default = false })
 
--- Anti-AFK Toggle
-Tabs.Main:AddToggle("AntiAfkToggle", {
-    Title = "Anti AFK",
-    Default = true
-}):OnChanged(function(val)
-    -- You could toggle this off if needed
-end)
+    Toggle:OnChanged(function()
 
--- Credits tab
-Tabs.Settings:AddParagraph({ Title = "🌐 Credits & Info 🌐", Content = "" })
-Tabs.Settings:AddParagraph({ Title = "👑 Crown Cheats 👑", Content = "" })
-Tabs.Settings:AddParagraph({ Title = "📝 Script : Driving Empire", Content = "" })
-Tabs.Settings:AddParagraph({ Title = "By : ashy1828, monstra", Content = "" })
-Tabs.Settings:AddParagraph({ Title = "UI : Fluent", Content = "" })
-Tabs.Settings:AddParagraph({ Title = "v1.0.2", Content = "" })
 
--- Save/Load UI
+    Options.MyToggle:SetValue(false)
+
+local Toggle = Tabs.Main:AddToggle("MyToggle", {Title = "Anti AFK", Default = false })
+
+    Toggle:OnChanged(function() -- Anti Afk Before Script is Injected--
+
+        print("Toggle changed:", Options.MyToggle.Value)
+    end)
+
+    Options.MyToggle:SetValue(false)
+
+end
+
+
+
+
+-- Addons:
+-- SaveManager (Allows you to have a configuration system)
+-- InterfaceManager (Allows you to have a interface managment system)
+
+-- Hand the library over to our managers
 SaveManager:SetLibrary(Fluent)
 InterfaceManager:SetLibrary(Fluent)
+
+-- Ignore keys that are used by ThemeManager.
+-- (we dont want configs to save themes, do we?)
 SaveManager:IgnoreThemeSettings()
+
+-- You can add indexes of elements the save manager should ignore
 SaveManager:SetIgnoreIndexes({})
+
+-- use case for doing it this way:
+-- a script hub could have themes in a global folder
+-- and game configs in a separate folder per game
 InterfaceManager:SetFolder("FluentScriptHub")
 SaveManager:SetFolder("FluentScriptHub/specific-game")
+
 InterfaceManager:BuildInterfaceSection(Tabs.Settings)
 SaveManager:BuildConfigSection(Tabs.Settings)
+
 
 Window:SelectTab(1)
 
 Fluent:Notify({
     Title = "Crown Cheats",
-    Content = "Driving Empire Script Has Loaded Successfully!",
+    Content = "Driving Empire Script Has Loaded Succesfully!",
     Duration = 8
 })
 
+-- You can use the SaveManager:LoadAutoloadConfig() to load a config
+-- which has been marked to be one that auto loads!
 SaveManager:LoadAutoloadConfig()
